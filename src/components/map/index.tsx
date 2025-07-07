@@ -60,30 +60,27 @@ const Map: FC<MapProps> = ({ activeDay, allDays }) => {
     });
   };
 
+  const updateMap = (map: google.maps.Map) => {
+    clearMarkers();
+    addMarkers(map);
+
+    if (activeDay && activeDay.activities.length > 0) {
+      const firstCoords = activeDay.activities[0].coords;
+      map.panTo({ lat: firstCoords.lat, lng: firstCoords.lng });
+    }
+  };
+
   const onMapLoad = useCallback(
     (map: google.maps.Map) => {
       mapRef.current = map;
-
-      clearMarkers();
-      addMarkers(map);
-
-      if (activeDay && activeDay.activities.length > 0) {
-        const firstCoords = activeDay.activities[0].coords;
-        map.panTo({ lat: firstCoords.lat, lng: firstCoords.lng });
-      }
+      updateMap(map);
     },
     [activeDay, allDays]
   );
 
   useEffect(() => {
-    if (!mapRef.current) return;
-
-    clearMarkers();
-    addMarkers(mapRef.current);
-
-    if (activeDay && activeDay.activities.length > 0) {
-      const firstCoords = activeDay.activities[0].coords;
-      mapRef.current.panTo({ lat: firstCoords.lat, lng: firstCoords.lng });
+    if (mapRef.current) {
+      updateMap(mapRef.current);
     }
   }, [activeDay, allDays]);
 
